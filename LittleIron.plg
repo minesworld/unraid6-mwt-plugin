@@ -1,0 +1,203 @@
+<?xml version='1.0' standalone='yes'?>
+
+<!-- PLUGIN DEFINITIONS -->
+<!DOCTYPE PLUGIN [
+  <!ENTITY name      "LittleIron">
+  <!ENTITY author    "Michael Keller, minesworld">
+  <!ENTITY version   "0.1.0">
+  <!ENTITY repo      "https://192.168.242.30:1031/files/public/unraid6/">
+  <!ENTITY pluginURL "&repo;/&name;.plg">
+  <!ENTITY plugin    "/boot/config/plugins/&name;">
+  <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
+]>
+
+<PLUGIN  name="&name;"
+     author="&author;"
+     version="&version;"
+     pluginURL="&pluginURL;"
+     min="6.6.6"
+>
+
+<CHANGES>
+
+###2021.01.27
+- First version
+</CHANGES>
+
+<FILE Name="&emhttp;/README.md">
+<INLINE>
+LittleIron
+System for unRAID 6
+</INLINE>
+</FILE>
+
+<!--
+<FILE Name="&emhttp;LittleIron.png" Type="base64">
+<INLINE>
+
+</INLINE>
+</FILE>
+-->
+
+<!--
+<FILE Name="&plugin;/minesworld-CA.crt" Type="base64">
+<INLINE>LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUcwekNDQkx1Z0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRMEZBRENCb0RFTE1Ba0dBMVVFQmhNQ1JFVXgKRHpBTkJnTlZCQWdUQmtobGMzTmxiakVQTUEwR0ExVUVCeE1HVW05a1oyRjFNUnd3R2dZRFZRUUtFeE50YVc1bApjM2R2Y214a0xYTmxjblpwWTJWek1SWXdGQVlEVlFRTEV3MUpWQ0JrWlhCaGNuUnRaVzUwTVJZd0ZBWURWUVFECkV3MXRhVzVsYzNkdmNteGtMVU5CTVNFd0h3WUpLb1pJaHZjTkFRa0JGaEpwYm1adlFHMXBibVZ6ZDI5eWJHUXUKWkdVd0hoY05NakF3TXpFeU1UazFNREEwV2hjTk16QXdNekV3TVRrMU1EQTBXakNCb0RFTE1Ba0dBMVVFQmhNQwpSRVV4RHpBTkJnTlZCQWdUQmtobGMzTmxiakVQTUEwR0ExVUVCeE1HVW05a1oyRjFNUnd3R2dZRFZRUUtFeE50CmFXNWxjM2R2Y214a0xYTmxjblpwWTJWek1SWXdGQVlEVlFRTEV3MUpWQ0JrWlhCaGNuUnRaVzUwTVJZd0ZBWUQKVlFRREV3MXRhVzVsYzNkdmNteGtMVU5CTVNFd0h3WUpLb1pJaHZjTkFRa0JGaEpwYm1adlFHMXBibVZ6ZDI5eQpiR1F1WkdVd2dnSWlNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUNEd0F3Z2dJS0FvSUNBUURPd2dwNi9HazFwdmlnCjVrTXl1elM3d1I5ZmJBamVNSGJYdGFvOXlvRkVjSTYyUUovcUF5NEI5bG1TUjFHWDhib0lYR2FpYWI1Qmd1eWUKRlVIVDZIRFhRVTdVS05QeDlqS2RUS081Qjhqc2ZxMCswYkowUVg4c2p4bXdRRW9SY1RvZ3VLeGM5cGVtVjRzYgozVHhDaGZHUjZTakN6ODRTYjlsdDQwQ3NGMUlhcmZ5dXFrN2hpWHdFKzFsL2NkVnFpaXpTREExSTdwNnU3dEYrCm9TM3NKUFRFOTZEZkozckd4QVF4N0Uwck02VUdJNlg2K1piRVV6d1JIMTNSL2tEVm0xeWtyazlSRGgwNUlCTGkKYTU4RGpKc2x6S3RJcUU2b3o3YzE0TGxrTzZOanUzYzhBWjJYOEplSWNLeC9vekIzYU51Qk5CcjVRdEhWUlFUVwpiS0VuWE5IZHFCVzNGRnJEWFJXWkl6R1RLcnRxS3I1YS9RUC92SzhtN3lLNzBWOUFiV3ArTytqT2hwaEJ3Nm9lCm9jWG1iUWRCUnhhV3hQa2drTGdndWQyM01RaWZFcVZEeVRQS2ZiLzJsSmgrTzlCM3Jrb0hDYUgzUlVwZzZoQlMKTm5VTkhYTWY5UkRnNXJBTm5jcnAwK3NtWU9WbHViL1hnRmNFWkMxUnoxeWhrd2dwNlpsSnJxTW5lK3lZbFhyVApISHlaU25jM3A3Rk9hQTFJRWdRL1dPb2tld0MxQk12TFozb2NHMk9XcG5PWXBLWVJjNUxUQ2tsd3dIQ3RuMkUxCk44Y3cvSXozQTc2bGtXWjVweGRpZERsbERSd0FwMWg2RG9CbndIb1Q0RkFVTHNidVBmUmg1bmhqZXRGQytNamMKMGJIS1pMZXpQWWdOcWFTbTJXRHJBcm9WOCtEK0JRSURBUUFCbzRJQkZEQ0NBUkF3SFFZRFZSME9CQllFRkF4YQptZEllNCtvZ1JKLzBLMDV1LzdhWXdIV3NNSUhOQmdOVkhTTUVnY1V3Z2NLQUZBeGFtZEllNCtvZ1JKLzBLMDV1Ci83YVl3SFdzb1lHbXBJR2pNSUdnTVFzd0NRWURWUVFHRXdKRVJURVBNQTBHQTFVRUNCTUdTR1Z6YzJWdU1ROHcKRFFZRFZRUUhFd1pTYjJSbllYVXhIREFhQmdOVkJBb1RFMjFwYm1WemQyOXliR1F0YzJWeWRtbGpaWE14RmpBVQpCZ05WQkFzVERVbFVJR1JsY0dGeWRHMWxiblF4RmpBVUJnTlZCQU1URFcxcGJtVnpkMjl5YkdRdFEwRXhJVEFmCkJna3Foa2lHOXcwQkNRRVdFbWx1Wm05QWJXbHVaWE4zYjNKc1pDNWtaWUlCQURBUEJnTlZIUk1CQWY4RUJUQUQKQVFIL01BNEdBMVVkRHdFQi93UUVBd0lCaGpBTkJna3Foa2lHOXcwQkFRMEZBQU9DQWdFQVJqV3ZxdWhWYW4zeApRMFJwTWNjc2wyVmF6K3ZUR1BtRXdBeXR3WFIrWGMzblRDMXk0aXRRS1pNS3ZCQisxanhxVG9iZ3k0bVJYK1YwCkZuSUFaUUszMVNycTd6andrWUVPZ0JJeCtyZ3BnaW5ldlhFSURXUCtJN2xuR2dpTUFUR29PMi85anV2YlhudFMKRDhEbG03Q2E4RWdidmU2cWs3anZ3WEpKMVpxMDNsemZ4dW5mWlp4TjE5Sk9hSUd1NlpRYWVRUC92czFtSXFlbApqVENGSTNlN3J1U0J4V00weTRzVC90cDM0TmNaK21pcDJnalgwcXk0STZWMC9XUU9rQVNSZFpHcmZXd3JwOUJTCmxIUFNjdklFU2ZBWUpnSDNRVHh6b0t6RFhId2w2RjJleEZ6OE5XRUlYOG9pWnNpQWRUTzZsSENFK1NaNU9ic2kKbkRHMDRGNFU2bmlFUW9lQStWaVk3dDdLb3hERWN2a0F2WjF0ck9IckRFeS94Tml4bTZydUpjWXVFd0svUnF0ZgpYdHdMUjZOallPbVNJWEVaK09VV0xiU1QvbWl0OE1mU2tIeWNoTWp1Ni9YM1FFS20zQVdlWEs2MUdCdkRMUzM1Cm9lSXZjRmpvdVZCbThoaU5hSEpnRXYxU0xib2RZRUFKN0Yzck5XMHo5ODRKZTZFalZrUkNsR21WaWlCMjJTZ3IKaU1jc1Y2Uk1BRmd0ZTNpU2VGcUM4QWRBbEk2cFQyMHhWV2t4QVZSeE5GU0p5V0l6YXFmV29MNnVUOWZyZGdoeApIaG9xYXlGR3ZIbjZnUTVjbVZmeEdveTZDNDBJL3JIekZzS3Z0aXhidkhycmYyTmdSSnhOQnY3b3lTRmxiOU5VCmtxWlJKTkhxNUNnMW1iVFgyL3FMc0tnN25jY29Ienc9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+</INLINE>
+</FILE>
+-->
+
+<FILE Run="/bin/bash">
+<INLINE>
+
+install_cert() {
+  OLDDIR=$PWD
+
+  cd /etc/ssl/certs
+  echo "installing ${1}"
+
+  for X in `find . -lname "${1}.crt"`
+  do
+    rm $X
+  done
+  rm "${1}.crt"
+
+  echo "${2}" > "${1}.crt"
+
+  HASH=`openssl x509 -noout -hash -in "${1}.crt"`
+  INDEX=0
+  while [ -f "${HASH}.${INDEX}" ];
+  do
+    let INDEX++
+  done
+
+  ln -s "${1}.crt" "${HASH}.${INDEX}"
+
+  cd "${OLDDIR}"
+}
+
+MINESWORLDCA="-----BEGIN CERTIFICATE-----
+MIIG0zCCBLugAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBoDELMAkGA1UEBhMCREUx
+DzANBgNVBAgTBkhlc3NlbjEPMA0GA1UEBxMGUm9kZ2F1MRwwGgYDVQQKExNtaW5l
+c3dvcmxkLXNlcnZpY2VzMRYwFAYDVQQLEw1JVCBkZXBhcnRtZW50MRYwFAYDVQQD
+Ew1taW5lc3dvcmxkLUNBMSEwHwYJKoZIhvcNAQkBFhJpbmZvQG1pbmVzd29ybGQu
+ZGUwHhcNMjAwMzEyMTk1MDA0WhcNMzAwMzEwMTk1MDA0WjCBoDELMAkGA1UEBhMC
+REUxDzANBgNVBAgTBkhlc3NlbjEPMA0GA1UEBxMGUm9kZ2F1MRwwGgYDVQQKExNt
+aW5lc3dvcmxkLXNlcnZpY2VzMRYwFAYDVQQLEw1JVCBkZXBhcnRtZW50MRYwFAYD
+VQQDEw1taW5lc3dvcmxkLUNBMSEwHwYJKoZIhvcNAQkBFhJpbmZvQG1pbmVzd29y
+bGQuZGUwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDOwgp6/Gk1pvig
+5kMyuzS7wR9fbAjeMHbXtao9yoFEcI62QJ/qAy4B9lmSR1GX8boIXGaiab5Bguye
+FUHT6HDXQU7UKNPx9jKdTKO5B8jsfq0+0bJ0QX8sjxmwQEoRcToguKxc9pemV4sb
+3TxChfGR6SjCz84Sb9lt40CsF1Iarfyuqk7hiXwE+1l/cdVqiizSDA1I7p6u7tF+
+oS3sJPTE96DfJ3rGxAQx7E0rM6UGI6X6+ZbEUzwRH13R/kDVm1ykrk9RDh05IBLi
+a58DjJslzKtIqE6oz7c14LlkO6Nju3c8AZ2X8JeIcKx/ozB3aNuBNBr5QtHVRQTW
+bKEnXNHdqBW3FFrDXRWZIzGTKrtqKr5a/QP/vK8m7yK70V9AbWp+O+jOhphBw6oe
+ocXmbQdBRxaWxPkgkLggud23MQifEqVDyTPKfb/2lJh+O9B3rkoHCaH3RUpg6hBS
+NnUNHXMf9RDg5rANncrp0+smYOVlub/XgFcEZC1Rz1yhkwgp6ZlJrqMne+yYlXrT
+HHyZSnc3p7FOaA1IEgQ/WOokewC1BMvLZ3ocG2OWpnOYpKYRc5LTCklwwHCtn2E1
+N8cw/Iz3A76lkWZ5pxdidDllDRwAp1h6DoBnwHoT4FAULsbuPfRh5nhjetFC+Mjc
+0bHKZLezPYgNqaSm2WDrAroV8+D+BQIDAQABo4IBFDCCARAwHQYDVR0OBBYEFAxa
+mdIe4+ogRJ/0K05u/7aYwHWsMIHNBgNVHSMEgcUwgcKAFAxamdIe4+ogRJ/0K05u
+/7aYwHWsoYGmpIGjMIGgMQswCQYDVQQGEwJERTEPMA0GA1UECBMGSGVzc2VuMQ8w
+DQYDVQQHEwZSb2RnYXUxHDAaBgNVBAoTE21pbmVzd29ybGQtc2VydmljZXMxFjAU
+BgNVBAsTDUlUIGRlcGFydG1lbnQxFjAUBgNVBAMTDW1pbmVzd29ybGQtQ0ExITAf
+BgkqhkiG9w0BCQEWEmluZm9AbWluZXN3b3JsZC5kZYIBADAPBgNVHRMBAf8EBTAD
+AQH/MA4GA1UdDwEB/wQEAwIBhjANBgkqhkiG9w0BAQ0FAAOCAgEARjWvquhVan3x
+Q0RpMccsl2Vaz+vTGPmEwAytwXR+Xc3nTC1y4itQKZMKvBB+1jxqTobgy4mRX+V0
+FnIAZQK31Srq7zjwkYEOgBIx+rgpginevXEIDWP+I7lnGgiMATGoO2/9juvbXntS
+D8Dlm7Ca8Egbve6qk7jvwXJJ1Zq03lzfxunfZZxN19JOaIGu6ZQaeQP/vs1mIqel
+jTCFI3e7ruSBxWM0y4sT/tp34NcZ+mip2gjX0qy4I6V0/WQOkASRdZGrfWwrp9BS
+lHPScvIESfAYJgH3QTxzoKzDXHwl6F2exFz8NWEIX8oiZsiAdTO6lHCE+SZ5Obsi
+nDG04F4U6niEQoeA+ViY7t7KoxDEcvkAvZ1trOHrDEy/xNixm6ruJcYuEwK/Rqtf
+XtwLR6NjYOmSIXEZ+OUWLbST/mit8MfSkHychMju6/X3QEKm3AWeXK61GBvDLS35
+oeIvcFjouVBm8hiNaHJgEv1SLbodYEAJ7F3rNW0z984Je6EjVkRClGmViiB22Sgr
+iMcsV6RMAFgte3iSeFqC8AdAlI6pT20xVWkxAVRxNFSJyWIzaqfWoL6uT9frdghx
+HhoqayFGvHn6gQ5cmVfxGoy6C40I/rHzFsKvtixbvHrrf2NgRJxNBv7oySFlb9NU
+kqZRJNHq5Cg1mbTX2/qLsKg7nccoHzw=
+-----END CERTIFICATE-----"
+
+
+littleiron_pkg="LittleIron.&version;.x86_64.tgz"
+
+download_install() {
+  local dest="&plugin;/packages/${1}"
+  # local src="&repo;/packages/${1}"
+  local src="&repo;/${1}"
+
+  echo "storing packages in &plugin;/packages"
+ 
+  mkdir -p "&plugin;/packages"
+  if [ ! -f "${dest}" ]; then
+    curl --location --silent --fail "${src}" --output "${dest}"
+  fi
+  if [ ! -f "${dest}.md5" ]; then
+    curl --location --silent --fail "${src}.md5" --output "${dest}.md5"
+  fi
+
+  orig_md5=$(/usr/bin/cat $dest.md5)
+  file_md5=$(/usr/bin/md5sum ${dest})
+
+  if [ "${file_md5:0:32}" != "${orig_md5:0:32}" ]; then
+    echo "Wrong '${1}' package md5 hash."
+    rm "${dest}"
+    exit 1
+  else
+    if [ -d /opt/mwt ]; then
+      rm -Rf /opt/mwt
+    fi
+
+    tar -xzf "${dest}" -C /
+    #delte old tgz
+    find "&plugin;/packages/"* ! -name *"&version;"* -exec rm {} \;
+  fi
+}
+
+
+#install script 
+install_cert minesworld-CA "${MINESWORLDCA}"
+download_install "${littleiron_pkg}"
+#fix for the icon
+# chmod 755 /usr/local/emhttp/plugins/unRAID6-ZnapZend/
+
+for X in zfstool zfswerkzeug zfsbackup
+do
+  echo "symlinking to /usr/local/bin/$X"
+  if [ -f /usr/local/bin/$X ]; then
+    rm /usr/local/bin/$X
+  fi
+  ln -s /opt/mwt/sbin/$X /usr/local/bin/$X 
+done
+
+</INLINE>
+</FILE>
+
+<!-- PLUGIN REMOVAL SCRIPT -->
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+
+remove_cert() {
+  OLDDIR=$PWD
+
+  echo "removing ${1}"
+
+  cd /etc/ssl/certs
+  for X in `find . -lname "${1}.crt"`
+  do
+    rm $X
+  done
+  rm "${1}.crt"
+
+  cd "${OLDDIR}"
+}
+
+echo "+=============================================================================="
+echo "| Uninstalling LittleIron"
+echo "+=============================================================================="
+# Remove plugin related files
+remove_cert minesworld-CA
+rm -rf /usr/local/emhttp/plugins/&name;
+rm -rf &plugin;
+echo ""
+echo "LittleIron plugin uninstalled."
+</INLINE>
+</FILE>
+</PLUGIN>
