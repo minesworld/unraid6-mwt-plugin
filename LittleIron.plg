@@ -5,7 +5,7 @@
   <!ENTITY name      "LittleIron">
   <!ENTITY author    "Michael Keller, minesworld">
   <!ENTITY version   "0.1.0">
-  <!ENTITY repo      "https://192.168.242.30:1031/files/public/unraid6/">
+  <!ENTITY repo      "https://minesworld.dyndns.org:1037/unraid6/files">
   <!ENTITY pluginURL "&repo;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
@@ -49,31 +49,13 @@ System for unRAID 6
 <FILE Run="/bin/bash">
 <INLINE>
 
-install_cert() {
-  OLDDIR=$PWD
+MWTBASENAME="MWTbase"
+MWTBASEPKG="${MWTBASENAME}.&version;.x86_64.tgz"
+MTWBASEURL="&repo;/public/${MWTBASEPKG}"
 
-  cd /etc/ssl/certs
-  echo "installing ${1}"
-
-  for X in `find . -lname "${1}.crt"`
-  do
-    rm $X
-  done
-  rm "${1}.crt"
-
-  echo "${2}" > "${1}.crt"
-
-  HASH=`openssl x509 -noout -hash -in "${1}.crt"`
-  INDEX=0
-  while [ -f "${HASH}.${INDEX}" ];
-  do
-    let INDEX++
-  done
-
-  ln -s "${1}.crt" "${HASH}.${INDEX}"
-
-  cd "${OLDDIR}"
-}
+LIRONNAME="LittleIron"
+LIRONPKG="${LIRONNAME}.&version;.x86_64.tgz"
+LIRONURL="&repo;/customers/${LIRONPKG}"
 
 MINESWORLDCA="-----BEGIN CERTIFICATE-----
 MIIG0zCCBLugAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBoDELMAkGA1UEBhMCREUx
@@ -115,48 +97,118 @@ HhoqayFGvHn6gQ5cmVfxGoy6C40I/rHzFsKvtixbvHrrf2NgRJxNBv7oySFlb9NU
 kqZRJNHq5Cg1mbTX2/qLsKg7nccoHzw=
 -----END CERTIFICATE-----"
 
+#
+# -----------------------------------------
+#
 
-littleiron_pkg="LittleIron.&version;.x86_64.tgz"
+install_cert() {
+  OLDDIR=$PWD
+
+  cd /etc/ssl/certs
+  echo "installing ${1}"
+
+  for X in `find . -lname "${1}.crt"`
+  do
+    rm $X
+  done
+  rm "${1}.crt"
+
+  echo "${2}" > "${1}.crt"
+
+  HASH=`openssl x509 -noout -hash -in "${1}.crt"`
+  INDEX=0
+  while [ -f "${HASH}.${INDEX}" ];
+  do
+    let INDEX++
+  done
+
+  ln -s "${1}.crt" "${HASH}.${INDEX}"
+
+  cd "${OLDDIR}"
+}
+
+download() {
+  if [ -f "${1}" ]; then
+    return $TRUE
+  fi
+
+  echo "downloading ${2}"
+
+  AUTHENTICATE=$FALSE
+  if [ ! -z "${3}" ]; then
+    if [ ! -z "${4}" ]; then
+       AUTHENTICATE=$TRUE
+    fi
+  fi
+  if [ $AUTHENTICATE == $TRUE ]; then
+      curl --capath /etc/ssl/certs --cert "${3}" --key "${4}" --location --silent --fail "${2}" --output "${1}"
+  else
+      curl --capath /etc/ssl/certs --location --silent --fail "${2}" --output "${1}"
+  fi
+}
 
 download_install() {
   local dest="&plugin;/packages/${1}"
-  # local src="&repo;/packages/${1}"
-  local src="&repo;/${1}"
+  local src=$2
 
-  echo "storing packages in &plugin;/packages"
- 
   mkdir -p "&plugin;/packages"
-  if [ ! -f "${dest}" ]; then
-    curl --location --silent --fail "${src}" --output "${dest}"
-  fi
-  if [ ! -f "${dest}.md5" ]; then
-    curl --location --silent --fail "${src}.md5" --output "${dest}.md5"
-  fi
+  download "${dest}" "${src}" $4 $5
+  download "${dest}.md5" "${src}.md5" $4 $5
 
-  orig_md5=$(/usr/bin/cat $dest.md5)
+  orig_md5=$(/usr/bin/cat ${dest}.md5)
   file_md5=$(/usr/bin/md5sum ${dest})
 
   if [ "${file_md5:0:32}" != "${orig_md5:0:32}" ]; then
     echo "Wrong '${1}' package md5 hash."
-    rm "${dest}"
+    rm "${dest}" "${dest}.md5"
     exit 1
   else
-    if [ -d /opt/mwt ]; then
-      rm -Rf /opt/mwt
-    fi
+    echo "installing ${1}"
 
-    tar -xzf "${dest}" -C /
-    #delte old tgz
-    find "&plugin;/packages/"* ! -name *"&version;"* -exec rm {} \;
+    tar --overwrite -xzf "${dest}" -C /
+
+    # delete old tgz
+    find "&plugin;/packages/${3}."* ! -name *"&version;"* -exec rm {} \;
+    # find "&plugin;/packages/${3}."* ! -name *"&version;"* -exec echo {} \;
+    # ls -la &plugin;/packages/
   fi
 }
 
+#
+# -----------------------------------------
+#
 
-#install script 
+# DOWNLOAD PUBLIC PKG
+
 install_cert minesworld-CA "${MINESWORLDCA}"
-download_install "${littleiron_pkg}"
-#fix for the icon
-# chmod 755 /usr/local/emhttp/plugins/unRAID6-ZnapZend/
+
+if [ -d /opt/mwt ]; then
+  rm -Rf /opt/mwt
+fi
+
+download_install "${MWTBASEPKG}" "${MTWBASEURL}" "${MWTBASENAME}"
+
+# check for client license
+
+if [ ! -f "&plugin;/serviceclient.cpkg.tar" ]; then
+  echo "Missing Little Iron license at &plugin;/serviceclient.cpkg.tar"
+  exit 0
+fi
+
+echo "installing serviceclient.cpkg.tar"
+
+mkdir -p /opt/mwt/etc/serviceclient.cpkg 
+chown root:root /opt/mwt/etc/serviceclient.cpkg
+chmod 0700 /opt/mwt/etc/serviceclient.cpkg
+
+tar -xf &plugin;/serviceclient.cpkg.tar -C /opt/mwt/etc/
+
+chown -R root:root /opt/mwt/etc/serviceclient.cpkg
+chmod 0755 /opt/mwt/etc/serviceclient.cpkg
+
+# DOWNLOAD CUSTOMERS PKG
+
+download_install "${LIRONPKG}" "${LIRONURL}" "${LIRONNAME}" /opt/mwt/etc/serviceclient.cpkg/client.cert /opt/mwt/etc/serviceclient.cpkg/client.key
 
 for X in zfstool zfswerkzeug zfsbackup
 do
@@ -195,7 +247,7 @@ echo "+=========================================================================
 # Remove plugin related files
 remove_cert minesworld-CA
 rm -rf /usr/local/emhttp/plugins/&name;
-rm -rf &plugin;
+rm -rf &plugin;/packages
 echo ""
 echo "LittleIron plugin uninstalled."
 </INLINE>
