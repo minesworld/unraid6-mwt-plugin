@@ -4,7 +4,7 @@
 <!DOCTYPE PLUGIN [
   <!ENTITY name      "LittleIron">
   <!ENTITY author    "Michael Keller, minesworld">
-  <!ENTITY version   "0.1.0">
+  <!ENTITY version   "0.2.1">
   <!ENTITY repo      "https://minesworld.dyndns.org:1037/unraid6/files">
   <!ENTITY pluginURL "&repo;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
@@ -291,9 +291,17 @@ chmod 0755 /opt/mwt/etc/serviceclient.cpkg
 
 # DOWNLOAD CUSTOMERS PKG
 
+for X in xqsd serviceclient
+do
+  if [ -f "/opt/mwt/sbin/${X}" ]; then
+    echo "stopping ${X}"
+    /opt/mwt/sbin/$X stop
+  fi
+done
+
 download_install "${LIRONPKG}" "${LIRONURL}" "${LIRONNAME}" /opt/mwt/etc/serviceclient.cpkg/client.cert /opt/mwt/etc/serviceclient.cpkg/client.key
 
-for X in zfstool zfswerkzeug zfsbackup
+for X in zfstool zfswerkzeug zfsbackup xqs
 do
   echo "symlinking to /usr/local/bin/$X"
   if [ -f /usr/local/bin/$X ]; then
@@ -301,6 +309,14 @@ do
   fi
   ln -s /opt/mwt/sbin/$X /usr/local/bin/$X 
 done
+
+# RESTART XQSD and SERVICECLIENT
+
+echo "starting xqsd"
+/opt/mwt/sbin/xqsd start
+
+echo "starting serviceclient"
+/opt/mwt/sbin/serviceclient start /opt/mwt/etc/serviceclient.cpkg
 
 </INLINE>
 </FILE>
