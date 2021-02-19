@@ -4,7 +4,7 @@
 <!DOCTYPE PLUGIN [
   <!ENTITY name      "LittleIron">
   <!ENTITY author    "Michael Keller, minesworld">
-  <!ENTITY version   "0.2.1">
+  <!ENTITY version   "0.2.2">
   <!ENTITY repo      "https://minesworld.dyndns.org:1037/unraid6/files">
   <!ENTITY pluginURL "&repo;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
@@ -312,11 +312,11 @@ done
 
 # RESTART XQSD and SERVICECLIENT
 
-echo "starting xqsd"
-/opt/mwt/sbin/xqsd start
-
-echo "starting serviceclient"
-/opt/mwt/sbin/serviceclient start /opt/mwt/etc/serviceclient.cpkg
+for X in xqsd serviceclient
+do
+  echo "starting ${X}"
+  /opt/mwt/sbin/$X run
+done
 
 </INLINE>
 </FILE>
