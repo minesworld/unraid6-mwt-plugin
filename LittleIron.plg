@@ -49,13 +49,26 @@ System for unRAID 6
 <FILE Run="/bin/bash">
 <INLINE>
 
+UNRAIDVERSION=$(cat /etc/unraid-version | cut -d '"' -f2)
+
 MWTBASENAME="MWTbase"
 MWTBASEPKG="${MWTBASENAME}.&version;.x86_64.tgz"
 MTWBASEURL="&repo;/public/${MWTBASEPKG}"
 
+CUSTOMERSURL="&repo;/customers"
+
+ZFSVERSION="0.8.4"
+ZFSNAME="zfs.${ZFSVERSION}-unraid"
+ZFSPKG="${ZFSNAME}.${UNRAIDVERSION}.x86_64.tgz"
+ZFSURL="${CUSTOMERSURL}/${ZFSPKG}"
+
 LIRONNAME="LittleIron"
 LIRONPKG="${LIRONNAME}.&version;.x86_64.tgz"
-LIRONURL="&repo;/customers/${LIRONPKG}"
+LIRONURL="${CUSTOMERSURL}/${LIRONPKG}"
+
+#
+# -----------------------------------------
+#
 
 MINESWORLDCA="-----BEGIN CERTIFICATE-----
 MIIG0zCCBLugAwIBAgIBADANBgkqhkiG9w0BAQ0FADCBoDELMAkGA1UEBhMCREUx
@@ -137,7 +150,6 @@ sgezdnECvwtut3wgr418LFUGvnqKEmRSwQNTeSmGz/FlihcKRYLuV/a0TuojJ0BU
 pRtEQGGcEvGl/WzaSgorMCLTn12o8Z0itZgZdwo=
 -----END CERTIFICATE-----"
 
-
 SERVICESCA="-----BEGIN CERTIFICATE-----
 MIIGzzCCBLegAwIBAgIBATANBgkqhkiG9w0BAQ0FADCBojELMAkGA1UEBhMCREUx
 DzANBgNVBAgTBkhlc3NlbjEVMBMGA1UEBxMMR3JlaWZlbnN0ZWluMSAwHgYDVQQK
@@ -208,7 +220,9 @@ install_cert() {
   cd "${OLDDIR}"
 }
 
-download() {
+download_file() {
+  # DESTINATION SOURCEURL CLIENTCERT CLIENTKEY
+
   if [ -f "${1}" ]; then
     return $TRUE
   fi
@@ -228,31 +242,63 @@ download() {
   fi
 }
 
-download_install() {
-  local dest="&plugin;/packages/${1}"
-  local src=$2
+download() {
+  # FULLPKGNAME SOURCEURL PKGPREFIX VERSION CLIENTCERT CLIENTKEY 
+
+  local DEST="&plugin;/packages/${1}"
+  local SRC=$2
 
   mkdir -p "&plugin;/packages"
-  download "${dest}" "${src}" $4 $5
-  download "${dest}.md5" "${src}.md5" $4 $5
+  download_file "${DEST}" "${SRC}" $5 $6
+  download_file "${DEST}.md5" "${SRC}.md5" $5 $6
 
-  orig_md5=$(/usr/bin/cat ${dest}.md5)
-  file_md5=$(/usr/bin/md5sum ${dest})
+  orig_md5=$(/usr/bin/cat ${DEST}.md5)
+  file_md5=$(/usr/bin/md5sum ${DEST})
 
   if [ "${file_md5:0:32}" != "${orig_md5:0:32}" ]; then
     echo "Wrong '${1}' package md5 hash."
-    rm "${dest}" "${dest}.md5"
+    rm "${DEST}" "${DEST}.md5"
     exit 1
   else
-    echo "installing ${1}"
-
-    tar --overwrite -xzf "${dest}" -C /
-
     # delete old tgz
-    find "&plugin;/packages/${3}."* ! -name *"&version;"* -exec rm {} \;
-    # find "&plugin;/packages/${3}."* ! -name *"&version;"* -exec echo {} \;
+    find "&plugin;/packages/${3}."* ! -name "${3}.${4}"* -exec rm {} \;
     # ls -la &plugin;/packages/
   fi
+}
+
+unpack() {
+  # FULLPKGNAME
+
+  local SRC="&plugin;/packages/${1}"
+  echo "installing ${1}"
+
+  tar --overwrite -xzf "${SRC}" -C /
+}
+
+install_zfs() {
+  # FULLPKGNAME
+
+  local SRC="&plugin;/packages/${1}"
+
+  if mount | grep /lib/modules &gt; /dev/null;
+  then
+    if [ -w /lib/modules ]; then 
+      echo "No need to remount modules"
+    else
+      echo "Remounting modules"
+      cp -r /lib/modules /tmp
+      umount -l /lib/modules/
+      rm -rf  /lib/modules
+      mv -f  /tmp/modules /lib
+    fi
+  fi
+
+  echo "installing ${1}"
+
+  /sbin/installpkg "${SRC}"
+
+  depmod &gt;&gt; /dev/null
+  modprobe zfs &gt;&gt; /dev/null
 }
 
 #
@@ -269,7 +315,8 @@ if [ -d /opt/mwt ]; then
   rm -Rf /opt/mwt
 fi
 
-download_install "${MWTBASEPKG}" "${MTWBASEURL}" "${MWTBASENAME}"
+download "${MWTBASEPKG}" "${MTWBASEURL}" "${MWTBASENAME}" &version;
+unpack "${MWTBASEPKG}"
 
 # check for client license
 
@@ -289,6 +336,13 @@ tar -xf &plugin;/serviceclient.cpkg.tar -C /opt/mwt/etc/
 chown -R root:root /opt/mwt/etc/serviceclient.cpkg
 chmod 0755 /opt/mwt/etc/serviceclient.cpkg
 
+
+# DOWNLOAD OpenZFS
+
+download "${ZFSPKG}" "${ZFSURL}" "${ZFSNAME}" "${UNRAIDVERSION}" /opt/mwt/etc/serviceclient.cpkg/client.cert /opt/mwt/etc/serviceclient.cpkg/client.key
+install_zfs "${ZFSPKG}"
+
+
 # DOWNLOAD CUSTOMERS PKG
 
 for X in xqsd serviceclient
@@ -299,7 +353,8 @@ do
   fi
 done
 
-download_install "${LIRONPKG}" "${LIRONURL}" "${LIRONNAME}" /opt/mwt/etc/serviceclient.cpkg/client.cert /opt/mwt/etc/serviceclient.cpkg/client.key
+download "${LIRONPKG}" "${LIRONURL}" "${LIRONNAME}" &version; /opt/mwt/etc/serviceclient.cpkg/client.cert /opt/mwt/etc/serviceclient.cpkg/client.key
+unpack "${LIRONPKG}"
 
 for X in zfstool zfswerkzeug zfsbackup xqs
 do
@@ -351,6 +406,8 @@ rm -rf /usr/local/emhttp/plugins/&name;
 rm -rf &plugin;/packages
 echo ""
 echo "LittleIron plugin uninstalled."
+echo "ZFS will be active until next reboot."
+
 </INLINE>
 </FILE>
 </PLUGIN>
