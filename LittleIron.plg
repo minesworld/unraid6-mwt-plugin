@@ -4,7 +4,7 @@
 <!DOCTYPE PLUGIN [
   <!ENTITY name      "LittleIron">
   <!ENTITY author    "Michael Keller, minesworld">
-  <!ENTITY version   "0.2.2">
+  <!ENTITY version   "0.2.5">
   <!ENTITY repo      "https://minesworld.dyndns.org:1037/unraid6/files">
   <!ENTITY pluginURL "&repo;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
@@ -275,32 +275,6 @@ unpack() {
   tar --overwrite -xzf "${SRC}" -C /
 }
 
-install_zfs() {
-  # FULLPKGNAME
-
-  local SRC="&plugin;/packages/${1}"
-
-  if mount | grep /lib/modules &gt; /dev/null;
-  then
-    if [ -w /lib/modules ]; then 
-      echo "No need to remount modules"
-    else
-      echo "Remounting modules"
-      cp -r /lib/modules /tmp
-      umount -l /lib/modules/
-      rm -rf  /lib/modules
-      mv -f  /tmp/modules /lib
-    fi
-  fi
-
-  echo "installing ${1}"
-
-  /sbin/installpkg "${SRC}"
-
-  depmod &gt;&gt; /dev/null
-  modprobe zfs &gt;&gt; /dev/null
-}
-
 #
 # -----------------------------------------
 #
@@ -331,17 +305,20 @@ mkdir -p /opt/mwt/etc/serviceclient.cpkg
 chown root:root /opt/mwt/etc/serviceclient.cpkg
 chmod 0700 /opt/mwt/etc/serviceclient.cpkg
 
-tar -xf &plugin;/serviceclient.cpkg.tar -C /opt/mwt/etc/
-
-chown -R root:root /opt/mwt/etc/serviceclient.cpkg
-chmod 0755 /opt/mwt/etc/serviceclient.cpkg
+tar -xf &plugin;/serviceclient.cpkg.tar -C /opt/mwt/etc/ &amp;&amp; chown -R root:root /opt/mwt/etc/serviceclient.cpkg &amp;&amp; chmod 0755 /opt/mwt/etc/serviceclient.cpkg
 
 
 # DOWNLOAD OpenZFS
 
 download "${ZFSPKG}" "${ZFSURL}" "${ZFSNAME}" "${UNRAIDVERSION}" /opt/mwt/etc/serviceclient.cpkg/client.cert /opt/mwt/etc/serviceclient.cpkg/client.key
-install_zfs "${ZFSPKG}"
+echo "&plugin;/packages/${ZFSPKG}" > /opt/mwt/etc/zfs.pkg &amp;&amp; chmod 0644 /opt/mwt/etc/zfs.pkg
 
+for X in arcsize import
+do
+  if [ -f "&plugin;/zfs.${X}" ]; then
+    cp "&plugin;/zfs.${X}" /opt/mwt/etc/ &amp;&amp; chmod 0644 /opt/mwt/etc/zfs.${X}
+  fi
+done
 
 # DOWNLOAD CUSTOMERS PKG
 
