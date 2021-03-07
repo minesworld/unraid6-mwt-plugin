@@ -5,7 +5,7 @@
   <!ENTITY name      "LittleIron">
   <!ENTITY author    "Michael Keller, minesworld">
   <!ENTITY version   "0.2.5">
-  <!ENTITY repo      "https://minesworld.dyndns.org:1037/unraid6/files">
+  <!ENTITY repo      "https://minesworld.dyndns.org:1037">
   <!ENTITY pluginURL "&repo;/&name;.plg">
   <!ENTITY plugin    "/boot/config/plugins/&name;">
   <!ENTITY emhttp    "/usr/local/emhttp/plugins/&name;">
@@ -53,9 +53,9 @@ UNRAIDVERSION=$(cat /etc/unraid-version | cut -d '"' -f2)
 
 MWTBASENAME="MWTbase"
 MWTBASEPKG="${MWTBASENAME}.&version;.x86_64.tgz"
-MTWBASEURL="&repo;/public/${MWTBASEPKG}"
+MTWBASEURL="&repo;/files/public/unraid6/${MWTBASEPKG}"
 
-CUSTOMERSURL="&repo;/customers"
+CUSTOMERSURL="&repo;/files/customers/unraid6"
 
 ZFSVERSION="0.8.4"
 ZFSNAME="zfs.${ZFSVERSION}-unraid"
